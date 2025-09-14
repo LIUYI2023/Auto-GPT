@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import os
 import pytest
 from pytest_mock import MockerFixture
 
@@ -7,7 +8,12 @@ from autogpt.config import Config
 from autogpt.llm import ApiManager
 from autogpt.workspace import Workspace
 
-pytest_plugins = ["tests.integration.agent_factory"]
+# Allow tests to opt-out of heavy integration fixtures to avoid importing
+# optional dependencies such as `spacy` when running lightweight unit tests.
+if os.getenv("SKIP_INTEGRATION_PLUGINS") == "1":
+    pytest_plugins: list[str] = []
+else:
+    pytest_plugins = ["tests.integration.agent_factory"]
 
 
 @pytest.fixture()
